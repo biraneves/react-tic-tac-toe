@@ -1,4 +1,5 @@
-import PayloadAction from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { PayloadAction } from '@reduxjs/toolkit';
 
 type CellValue = 'X' | 'O' | '';
 
@@ -11,22 +12,40 @@ const initialState: ITicTacToeState = {
     nextPlayer: 'X',
     board: [
         ['', '', ''],
-        ['', '', 'X'],
-        ['', 'O', ''],
+        ['', '', ''],
+        ['', '', ''],
     ],
 };
 
-type ActionPlay = PayloadAction<{ i: number; j: number }>;
+type ActionPlay = PayloadAction<{ i: number; j: number }, 'play'>;
+type ActionReset = Action<'reset'>;
 
-function TicTacToeReducer(state = initialState, action): ITicTacToeState {}
+function TicTacToeReducer(
+    state = initialState,
+    action: ActionPlay | ActionReset,
+): ITicTacToeState {
+    switch (action.type) {
+        case 'play':
+            const board = state.board.map((row) => row.map((cell) => cell));
+            return { nextPlayer: state.nextPlayer === 'X' ? 'O' : 'X', board };
+    }
+
+    return state;
+}
+
+const store = configureStore({
+    reducer: { ticTacToe: TicTacToeReducer },
+});
+
+store.dispatch({});
 
 export function TicTacToe() {
     const state: ITicTacToeState = {
         nextPlayer: 'X',
         board: [
             ['', '', ''],
-            ['', '', 'X'],
-            ['', 'O', ''],
+            ['', '', ''],
+            ['', '', ''],
         ],
     };
 
