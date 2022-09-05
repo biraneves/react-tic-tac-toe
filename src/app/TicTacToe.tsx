@@ -1,53 +1,8 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { PayloadAction } from '@reduxjs/toolkit';
-
-type CellValue = 'X' | 'O' | '';
-
-interface ITicTacToeState {
-    nextPlayer: 'X' | 'O';
-    board: CellValue[][];
-}
-
-const initialState: ITicTacToeState = {
-    nextPlayer: 'X',
-    board: [
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', ''],
-    ],
-};
-
-type ActionPlay = PayloadAction<{ i: number; j: number }, 'play'>;
-type ActionReset = Action<'reset'>;
-
-function TicTacToeReducer(
-    state = initialState,
-    action: ActionPlay | ActionReset,
-): ITicTacToeState {
-    switch (action.type) {
-        case 'play':
-            const board = state.board.map((row) => row.map((cell) => cell));
-            return { nextPlayer: state.nextPlayer === 'X' ? 'O' : 'X', board };
-    }
-
-    return state;
-}
-
-const store = configureStore({
-    reducer: { ticTacToe: TicTacToeReducer },
-});
-
-store.dispatch({});
+import { useAppDispatch, useAppSelector } from './store';
 
 export function TicTacToe() {
-    const state: ITicTacToeState = {
-        nextPlayer: 'X',
-        board: [
-            ['', '', ''],
-            ['', '', ''],
-            ['', '', ''],
-        ],
-    };
+    const state = useAppSelector((state) => state.ticTacToe);
+    const dispatch = useAppDispatch();
 
     return (
         <div className="ticTacToe">
@@ -57,13 +12,25 @@ export function TicTacToe() {
                     {state.board.map((row, i) => (
                         <tr key={i}>
                             {row.map((cell, j) => (
-                                <td key={j}>{cell}</td>
+                                <td
+                                    onClick={() =>
+                                        dispatch({
+                                            type: 'play',
+                                            payload: { i, j },
+                                        })
+                                    }
+                                    key={j}
+                                >
+                                    {cell}
+                                </td>
                             ))}
                         </tr>
                     ))}
                 </tbody>
             </table>
-            <button>Reiniciar partida</button>
+            <button onClick={() => dispatch({ type: 'reset' })}>
+                Reiniciar partida
+            </button>
         </div>
     );
 }
