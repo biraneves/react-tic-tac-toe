@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from './store';
+import { useAppDispatch, useAppSelector, play, reset } from './store';
 
 export function TicTacToe() {
     const state = useAppSelector((state) => state.ticTacToe);
@@ -25,12 +25,7 @@ export function TicTacToe() {
                         <tr key={i}>
                             {row.map((cell, j) => (
                                 <td
-                                    onClick={() =>
-                                        dispatch({
-                                            type: 'play',
-                                            payload: { i, j },
-                                        })
-                                    }
+                                    onClick={() => dispatch(play({ i, j }))}
                                     key={j}
                                 >
                                     {cell}
@@ -40,9 +35,7 @@ export function TicTacToe() {
                     ))}
                 </tbody>
             </table>
-            <button onClick={() => dispatch({ type: 'reset' })}>
-                Reiniciar partida
-            </button>
+            <button onClick={() => dispatch(reset())}>Reiniciar partida</button>
         </div>
     );
 }

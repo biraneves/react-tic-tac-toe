@@ -1,4 +1,4 @@
-import { Action, configureStore, PayloadAction } from '@reduxjs/toolkit';
+import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 export type CellValue = 'X' | 'O' | '';
@@ -19,9 +19,6 @@ const initialState: ITicTacToeState = {
         ['', '', ''],
     ],
 };
-
-type ActionPlay = PayloadAction<{ i: number; j: number }, 'play'>;
-type ActionReset = Action<'reset'>;
 
 function getWinner(board: CellValue[][]): Winner {
     const players: ('X' | 'O')[] = ['X', 'O'];
@@ -45,35 +42,33 @@ function getWinner(board: CellValue[][]): Winner {
     return '=';
 }
 
-function TicTacToeReducer(
-    state = initialState,
-    action: ActionPlay | ActionReset,
-): ITicTacToeState {
-    switch (action.type) {
-        case 'play':
+type ActionPlay = PayloadAction<{ i: number; j: number }>;
+
+const slice = createSlice({
+    name: 'ticTacToe',
+    initialState,
+    reducers: {
+        play: (state, action: ActionPlay) => {
             const { i, j } = action.payload;
             if (state.board[i][j] === '' && state.winner === '?') {
-                const board = state.board.map((row) => row.map((cell) => cell));
-                board[i][j] = state.nextPlayer;
-                const winner = getWinner(board);
-                return {
-                    nextPlayer: state.nextPlayer === 'X' ? 'O' : 'X',
-                    winner,
-                    board,
-                };
+                state.board[i][j] = state.nextPlayer;
+                state.winner = getWinner(state.board);
+                state.nextPlayer = state.nextPlayer === 'X' ? 'O' : 'X';
             } else {
                 return state;
             }
-        case 'reset':
+        },
+        reset: (state) => {
             return initialState;
-    }
-
-    return state;
-}
+        },
+    },
+});
 
 export const store = configureStore({
-    reducer: { ticTacToe: TicTacToeReducer },
+    reducer: { ticTacToe: slice.reducer },
 });
+
+export const { play, reset } = slice.actions;
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
