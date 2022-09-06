@@ -6,7 +6,19 @@ export function TicTacToe() {
 
     return (
         <div className="ticTacToe">
-            <div>Aguardando jogada de {state.nextPlayer}</div>
+            {state.winner !== '?' && (
+                <>
+                    {state.winner === '=' && <div>Empatou!</div>}
+                    {state.winner !== '=' && (
+                        <div>
+                            Vencedor: <strong>{state.winner}</strong>
+                        </div>
+                    )}
+                </>
+            )}
+            {state.winner === '?' && (
+                <div>Aguardando a jogada de {state.nextPlayer}</div>
+            )}
             <table>
                 <tbody>
                     {state.board.map((row, i) => (
